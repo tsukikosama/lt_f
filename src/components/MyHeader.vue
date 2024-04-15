@@ -3,9 +3,8 @@
     <el-menu :default-active="activeIndex" router="true" class="el-menu-demo" mode="horizontal" @select="handleSelect">
         <el-menu-item index="/">话题</el-menu-item>
 
-
-
-    <el-menu-item  ><el-button type="primary" @click.stop="add()">发表</el-button></el-menu-item>
+    <el-menu-item  >
+      <el-button type="primary" @click.stop="add()">发表</el-button></el-menu-item>
     <el-menu-item v-if="this.$store.state.user == undefined">
       <el-span @click="login"  >登录</el-span>&emsp;
     </el-menu-item>
@@ -36,7 +35,8 @@ export default {
     name:'myheader',
     data() {
       return {
-        key:''
+        key:'',
+        searchPost : []
       };
     },
     methods: {
@@ -63,7 +63,13 @@ export default {
         this.$router.push({path:'/add'})
       },
       search(){
-        this.$router.push({path:'/search'})
+        request.get('/post/search?key=' + this.key).then((res) => {
+            this.searchPost = res.data;
+        }).catch((e) =>{
+          this.$message.error("查询失败");
+        })
+        console.log(this.searchPost)
+        this.$router.push({name:'search',query:{searchPost:this.searchPost}})
       }
     },
     mounted() {
@@ -74,14 +80,19 @@ export default {
 
 <style scoped>
     .mycontent{
-        /* width: 100vw; */
-        /* display: flex; */
+         display: flex;
+         //justify-content: flex-end;
     }
-
+    .el-menu-item:nth-of-type(1){
+        margin-left: 10vw;
+    }
     .el-menu-item:nth-of-type(2){
-        margin-left: 60vw;
+      margin-left: 60vw;
     }
     .el-menu-item:first-of-type{
-        margin-left: 10vw;
+        //margin-left: 5vw;
+    }
+    .mysearch{
+      border-radius: 20px;
     }
 </style>

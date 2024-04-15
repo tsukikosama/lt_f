@@ -2,7 +2,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
-export default new VueRouter({ 
+export default new VueRouter({
     scrollBehavior(to, from, savePosition) { // 在点击浏览器的“前进/后退”，或者切换导航的时候触发。
     if (savePosition) {
         return savePosition;
@@ -19,14 +19,14 @@ export default new VueRouter({
         }
     }
 },
-  
+
     // 配置路由规则
     routes: [
         {
             path : '/',
             name:'index',
             component:()=>import('../pages/index.vue'),
-            
+
         },
         {
             path : '/add',
@@ -83,7 +83,7 @@ export default new VueRouter({
             name:'personalleft',
             component:()=>import('../components/personalleft.vue'),
         },
-        
+
         {
             path : '/login',
             name : 'login',
@@ -109,11 +109,25 @@ export default new VueRouter({
             name : 'feedback',
             component:()=>import('../pages/feedback.vue')
         },
-        
-       
-        
-        
+        {
+            path : '/search',
+            name : 'search',
+            component:()=>import('../pages/search.vue')
+        },
+        {
+            path : '/collection',
+            name : 'collection',
+            component:()=>import('../pages/collection.vue')
+        },
+        {
+            path : '/daily',
+            name : 'daily',
+            component:()=>import('../pages/daily.vue')
+        },
+
+
+
     ]
-    
-    
+
+
 })

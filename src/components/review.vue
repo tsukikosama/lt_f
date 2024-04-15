@@ -1,15 +1,13 @@
 <template>
     <div>
-
         <div class="chat">
-          
           <div class="item" v-for="(item,index1) in this.reviews" :key="index1">
               <div class="chat-content">
                 <!-- 左 -->
                 <div>
                   <div class="myavt">
                     <el-avatar :size="70" :src="item.usericon"></el-avatar>
-                  </div>  
+                  </div>
                 </div>
                 <!-- 右边 -->
                 <div  class="chat-right" >
@@ -28,12 +26,12 @@
 
               <!-- 子评论 -->
               <div  v-for="(reply,index2) in item.replays" :key="index2" style="display: flex;margin-left: 70px;">
-                <!-- 左 --> 
+                <!-- 左 -->
                 <div class="chat-content">
                   <div >
                   <div class="myavt">
                     <el-avatar :size="70" :src="reply.usericon"></el-avatar>
-                  </div>  
+                  </div>
                 </div>
                 <!-- 右边 -->
                 <div >
@@ -56,15 +54,15 @@
               </div>
           </div>
       </div>
-      
+
           <!-- 回复框 -->
           <div class="submits">
                 <div  class="rev" >
                   <div class="myavt">
-                    
-                    <el-avatar :size="60" class="myrev" :src="user == undefined ? '' : user.userIcon"></el-avatar> 
+
+                    <el-avatar :size="60" class="myrev" :src="user == undefined ? '' : user.userIcon"></el-avatar>
                   </div>
-                  
+
                 <div class="t" >
                   <el-input   type="text" class="input" placeholder="请输入你要回复的内容..只有登录后才可以评论哦!" v-model="reply" ></el-input>
                   <el-button class="submit" type="success" @click="sumbit()">发表</el-button>
@@ -72,8 +70,8 @@
               </div>
             </div>
     </div>
-      
-  
+
+
 
 </template>
 
@@ -99,7 +97,7 @@ export default {
           // console.log(index2);
           // console.log("eeeeeeeeeeeeeeeeeeee")
           let user = localStorage.getItem("user");
-          
+
           if(user == undefined){
             this.$message.error("没登陆禁止点赞");
             return;
@@ -144,7 +142,7 @@ export default {
           // console.log(this.$route.query.id)
           // console.log(user.uid)
           // console.log("eeee")
-          
+
           request.post("review/islike?bid="+this.$route.query.id+"&uid="+user.uid+"&rid="+t).then((res) =>{
             console.log(res.data);
           }).catch((e) =>{
@@ -152,46 +150,46 @@ export default {
             console.log(e)
           })
         },
-       
+
         review(res){
           console.log(res);
           // this.recover = true;
-         
+
           //回复的id
           this.replyid = res.id;
           // console.log(obj);
           //显示回复窗口
-          
+
           // console.log(this.reviews[this.replyid])
-          
+
         },
-        
+
         sumbit(){
 
-          for(let key of Object.keys(this.replycontent)){       
-              console.log(key)            
+          for(let key of Object.keys(this.replycontent)){
+              console.log(key)
               this.replycontent[key] = "";
           }
           // console.log("wwwww")
-          
+
           //设置内容
           this.$set(this.replycontent,"content",this.reply);
-          
+
           //设置属于那个博客
           this.$set(this.replycontent,"bid",Number(this.id));
-          
+
           this.$set(this.replycontent,"flag",false);
-          //获取用户名  
-          let u = localStorage.getItem("user"); 
+          //获取用户名
+          let u = localStorage.getItem("user");
           if(u == null){
             this.$message.error("请登录后在评论吧")
           }
           this.$set(this.replycontent,"username",JSON.parse(u).user.username)
           // console.log(u)
           this.$set(this.replycontent,"rid",null);
-          
+
           //设置回复的时间
-          this.$set(this.replycontent,"time",new Date().toLocaleString())  
+          this.$set(this.replycontent,"time",new Date().toLocaleString())
           //设置默认赞的数量
           this.$set(this.replycontent,"likes",0);
           this.$set(this.replycontent,"replays",[]);
@@ -209,21 +207,21 @@ export default {
               console.log(this.reviews[i]);
             }
           }
-          
-          
+
+
           if(this.replyid == -1){
             this.$set(this.reviews,this.reviews.length,JSON.parse(JSON.stringify(this.replycontent)))
           }
           // console.log(obj)
-          
-          
+
+
           request.post('/review/addreview',this.replycontent).then((res) => {
             this.$message.success(res.data)
           }).catch((e) => {
             console.log(e);
           })
-          
-         
+
+
           this.reply = "";
           this.replyid = -1;
           // this.recover = false;
@@ -233,28 +231,28 @@ export default {
         //     let scrollTop = document.documentElement.scrollTop;//滚动高度
         //     let clientHeight = document.documentElement.clientHeight;//可视高度
         //     let scrollHeight = document.documentElement.scrollHeight;//内容高度
-           
+
         //     if(scrollTop + clientHeight +100  > scrollHeight){
         //       this.recover = true
         //     }else{
         //       this.recover = false;
         //     }
         // },
-        
-       
+
+
 
     },
-     
+
     created(){
       console.log(this.$route.query.item)
-      
+
         this.bloginfo = this.$route.query.item;
-      
-        
+
+
         this.id = this.$route.query.id;
-       
+
          request.get("/blog/"+this.id).then((res) =>{
-          
+
             this.blog = res.data
              this.content = marked.parse(res.data.content)
             }).catch((e) =>{
@@ -276,7 +274,7 @@ export default {
         console.log(e)
       });
       let user = localStorage.getItem("user");
-     
+
       user = JSON.parse(user);
       user = user.user;
       if(user != null){
@@ -287,7 +285,7 @@ export default {
           //查找全部的点赞评论
           console.log(res)
           let ress = this.reviews;
-         
+
           console.log(ress)
           for(let i = 0 ; i < res.data.length ; i++){
             //遍历全部的评论数据 寻找点赞的数据
@@ -304,7 +302,7 @@ export default {
                   break;
                 }
               }
-              
+
             }
             // this.set(this.reviews[i],flag,!this.reviews[i].flag)
           }
@@ -338,7 +336,7 @@ export default {
   .my-content {
     background: #FDE2E2;
   }
-  
+
    .chat{
     margin-top: 3% ;
     width: 80%;
@@ -354,12 +352,12 @@ export default {
     flex-direction: column;
   }
   .chat-right div:first-child{
-   
+
     display: inline-block;
     float: left;
   }
   .chat-right div:first-child{
-   
+
     display: inline-block;
     float: ri;
   }
@@ -377,14 +375,14 @@ export default {
       display: block;
       float: right;
   }
-  
-  
-    
+
+
+
   .el-avatar{
     /* margin-right: 15px; */
   }
   .submits{
-    
+
     width: 100%;
     /* margin-left: 20%; */
     margin: 0 auto;
@@ -397,39 +395,39 @@ export default {
   }
   .input{
     width: 250px;
-   
+
     /* height: 100%; */
     background: #F1F2F3;
     /* margin-left: 3% ; */
   }
- 
+
   /**修改el-input的高度 */
   /deep/ .el-input__inner{
     height: 60px;
   }
-  
+
   .submit{
     height: 100% !important;
     margin-left: 15px;
-    
+
   }
   .t{
     display: flex;
     width: 600px;
     height: 60px;
-    
+
   }
   /deep/ .el-descriptions__title{
     /* text-align: center !important;
      */
     margin: 10px auto;
-    
+
     color: chocolate;
   }
   /deep/ .el-descriptions{
     /* display: flex;  */
     /* justify-content: center; */
-    
+
     background: rgb(196, 222, 193);
     /* padding: 0 auto; */
     /* border-radius: 10px; */
@@ -468,7 +466,7 @@ export default {
       width: 50px !important;
       height: 50px !important;
     }
-    
+
     .input{
       width: 150px;
     }

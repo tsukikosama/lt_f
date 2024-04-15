@@ -15,14 +15,14 @@
       <div>
 
 <div class="chat">
-  
+
   <div class="item" v-for="(item,index1) in this.reviews" :key="index1">
       <div class="chat-content">
         <!-- 左 -->
         <div>
           <div class="myavt">
             <el-avatar :size="70" :src="item.avatar"></el-avatar>
-          </div>  
+          </div>
         </div>
         <!-- 右边 -->
         <div  class="chat-right" >
@@ -41,12 +41,12 @@
 
       <!-- 子评论 -->
       <div  v-for="(reply,index2) in item.replays" :key="index2" style="display: flex;margin-left: 70px;">
-        <!-- 左 --> 
+        <!-- 左 -->
         <div class="chat-content">
           <div >
           <div class="myavt">
             <el-avatar :size="70" :src="reply.avatar"></el-avatar>
-          </div>  
+          </div>
         </div>
         <!-- 右边 -->
         <div >
@@ -72,10 +72,10 @@
   <div class="submits">
         <div  class="rev" >
           <div class="myavt">
-            
-            <el-avatar :size="60" class="myrev" :src="user == undefined ? '' : user.avatar"></el-avatar> 
+
+            <el-avatar :size="60" class="myrev" :src="user == undefined ? '' : user.avatar"></el-avatar>
           </div>
-          
+
         <div class="t" >
           <el-input   type="text" class="input" placeholder="请输入你要回复的内容..只有登录后才可以评论哦!" v-model="reply" ></el-input>
           <el-button class="submit" type="success" @click="sumbit()">发表</el-button>
@@ -84,8 +84,13 @@
     </div>
 </div>
 
-  
+
 </div>
+    </div>
+    <div class="floatbutton">
+      <el-button @click="collect()">
+        收藏
+      </el-button>
     </div>
   </div>
 </template>
@@ -96,10 +101,10 @@ import request from '@/utils/request'
 import VueMarkdown from 'vue-markdown'
 
 export default {
-    
+
     components: {
         'vue-markdown': VueMarkdown,
-        
+
     },
     data(){
         return{
@@ -129,8 +134,8 @@ export default {
           if(this.user == undefined){
             this.$message.error("没登陆禁止点赞");
             return;
-          }     
-          // console.log(user); 
+          }
+          // console.log(user);
           let t;
           //判断点赞的是父评论，还是子评论
           if(index2 == undefined){
@@ -152,46 +157,62 @@ export default {
             this.reviews[index1].replays[index2].flag = !this.reviews[index1].replays[index2].flag;
             t = this.reviews[index1].replays[index2].id;
           }
-        
-          
+
+
           request.post("review/islike?pid="+this.$route.query.pid+"&uid="+this.user.uid+"&rid="+t).then((res) =>{
-            
+
           }).catch((e) =>{
             this.$message.error("点赞失败")
             console.log(e)
           })
         },
-       
+
         review(res){
-         
+
           // this.recover = true;
-         
+
           //回复的id
           this.replyid = res.id;
           // console.log(obj);
           //显示回复窗口
-          
+
           // console.log(this.reviews[this.replyid])
-          
+
         },
-        
+        collect(){
+          if (this.$store.state.user == null){
+            this.$message.info("登录后才可以收藏")
+            return
+          }
+          request.post('/post/collect?pid='+this.$route.query.pid+
+              '&uid='+this.$store.state.user.uid).then((res) =>{
+              if(res.data == 0){
+                this.$message.success("取消收藏")
+              }else{
+                this.$message.success("收藏成功")
+              }
+          }).catch((e) =>{
+            this.$message.error("收藏失败")
+
+          })
+        },
         sumbit(){
 
-          for(let key of Object.keys(this.replycontent)){       
-              console.log(key)            
+          for(let key of Object.keys(this.replycontent)){
+              console.log(key)
               this.replycontent[key] = "";
           }
           // console.log("wwwww")
-          
+
           //设置内容
           this.$set(this.replycontent,"content",this.reply);
-          
+
           //设置属于那个博客
           this.$set(this.replycontent,"pid",Number(this.id));
-          
+
           this.$set(this.replycontent,"flag",false);
-          //获取用户名  
-          let u = this.user; 
+          //获取用户名
+          let u = this.user;
           console.log(u)
           if(u == null){
             this.$message.error("请登录后在评论吧")
@@ -199,9 +220,9 @@ export default {
           this.$set(this.replycontent,"username",u.username)
           // console.log(u)
           this.$set(this.replycontent,"rid",null);
-          
+
           //设置回复的时间
-          this.$set(this.replycontent,"time",new Date().toLocaleString())  
+          this.$set(this.replycontent,"time",new Date().toLocaleString())
           //设置默认赞的数量
           this.$set(this.replycontent,"likes",0);
           this.$set(this.replycontent,"replays",[]);
@@ -219,30 +240,28 @@ export default {
               console.log(this.reviews[i]);
             }
           }
-          
-          
+
+
           if(this.replyid == -1){
             this.$set(this.reviews,this.reviews.length,JSON.parse(JSON.stringify(this.replycontent)))
           }
           // console.log(obj)
-          
-          
+
+
           request.post('/review/addreview',this.replycontent).then((res) => {
             this.$message.success(res.data)
           }).catch((e) => {
             console.log(e);
           })
-          
-         
+
+
           this.reply = "";
           this.replyid = -1;
           // this.recover = false;
         },
-       
-        
     },
     created(){
-      console.log(this.$route.query.item)   
+      console.log(this.$route.query.item)
         this.bloginfo = this.$route.query.item;
         this.id = this.$route.query.uid;
     },
@@ -250,7 +269,7 @@ export default {
       // window.addEventListener("scroll", this.handleScroll, true);
       this.init();
       let pid = this.$route.query.pid;
-      
+
       request.get('/review/findall?pid='+pid).then((res) =>{
         // console.log(res.data)
         for(let i = 0 ; i < res.data.length ;i++){
@@ -262,9 +281,9 @@ export default {
         console.log(e)
       });
       let user = localStorage.getItem("user");
-     
+
       user = JSON.parse(user);
-      
+
       if(user != null){
         // this.recover = false;
         this.user = user;
@@ -273,7 +292,7 @@ export default {
           //查找全部的点赞评论
           console.log(res)
           let ress = this.reviews;
-         
+
           console.log(ress)
           for(let i = 0 ; i < res.data.length ; i++){
             //遍历全部的评论数据 寻找点赞的数据
@@ -290,7 +309,7 @@ export default {
                   break;
                 }
               }
-              
+
             }
             // this.set(this.reviews[i],flag,!this.reviews[i].flag)
           }
@@ -300,7 +319,7 @@ export default {
           this.$message.error("点赞失败请稍后再试。")
         })
     },
-   
+
 
 }
 </script>
@@ -347,7 +366,7 @@ export default {
   .my-content {
     background: #FDE2E2;
   }
-  
+
    .chat{
     margin-top: 3% ;
     width: 80%;
@@ -366,12 +385,12 @@ export default {
     flex-direction: column;
   }
   .chat-right div:first-child{
-   
+
     display: inline-block;
     float: left;
   }
   .chat-right div:first-child{
-   
+
     display: inline-block;
     float: ri;
   }
@@ -389,14 +408,14 @@ export default {
       display: block;
       float: right;
   }
-  
-  
-    
+
+
+
   .el-avatar{
     /* margin-right: 15px; */
   }
   .submits{
-    
+
     width: 100%;
     /* margin-left: 20%; */
     margin: 0 auto;
@@ -409,21 +428,21 @@ export default {
   }
   .input{
     width: 250px;
-   
+
     /* height: 100%; */
     background: #F1F2F3;
     /* margin-left: 3% ; */
   }
- 
+
   /**修改el-input的高度 */
   /deep/ .el-input__inner{
     height: 60px;
   }
-  
+
   .submit{
     height: 100% !important;
     margin-left: 15px;
-    
+
   }
   .t{
     display: flex;
@@ -435,13 +454,13 @@ export default {
     /* text-align: center !important;
      */
     margin: 10px auto;
-    
+
     color: chocolate;
   }
   /deep/ .el-descriptions{
     /* display: flex;  */
     /* justify-content: center; */
-    
+
     background: rgb(196, 222, 193);
     /* padding: 0 auto; */
     /* border-radius: 10px; */
@@ -482,10 +501,15 @@ export default {
       width: 50px !important;
       height: 50px !important;
     }
-    
+
     .input{
       width: 150px;
     }
   }
-
+  .floatbutton{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 999;
+  }
 </style>

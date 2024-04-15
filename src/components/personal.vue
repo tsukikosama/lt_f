@@ -2,9 +2,10 @@
   <div class="mycontent">
     <div class="avator">
         <div>
-            <el-avatar :size="100" shape="square" 
+            <el-avatar :size="110" shape="square"
                         :src="user.avatar" fit="cover"   ></el-avatar>
         </div>
+
         <div class="nickname">
             <el-span>{{user.nickname}}</el-span>
             <el-span>{{user.state}}</el-span>
@@ -39,7 +40,7 @@ export default {
         background-position-y:25% ;
         background-position-x: 55%;
         background-repeat: no-repeat;
-        
+
         display: flex;
         align-items: flex-end;
     }
@@ -47,12 +48,12 @@ export default {
         display: flex;
         width: 80vw;
         background: linear-gradient(to right, rgb(255, 255, 255), rgba(255, 255, 255, 0.29));;
-        
+
     }
-    .avator .el-image{
-        height: 100px;
-        width: 100px;
-       
+    .avator div{
+        height: 110px;
+        width: 110px;
+
     }
     .nickname{
         display: flex;
